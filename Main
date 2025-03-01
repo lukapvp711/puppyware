@@ -1,0 +1,1299 @@
+
+local function PlayThatBitch()
+    local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "IntroScreen"
+    screenGui.Parent = playerGui
+
+    local frame = Instance.new("Frame")
+    frame.Name = "IntroFrame"
+    frame.Parent = screenGui
+    frame.Size = UDim2.new(1, 0, 1, 0)
+    frame.BackgroundTransparency = 1
+
+    local imageLabel = Instance.new("ImageLabel")
+    imageLabel.Name = "IntroImage"
+    imageLabel.Parent = frame
+    imageLabel.Size = UDim2.new(0.02, 0, 0.01, 0)
+    imageLabel.Position = UDim2.new(0.5, -0.1, 0.5, -0.1)
+    imageLabel.Image = "rbxassetid://105404854225071"
+    imageLabel.BackgroundTransparency = 1
+    imageLabel.ImageTransparency = 100
+    imageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+
+    local sound = Instance.new("Sound")
+    sound.Name = "IntroSound"
+    sound.Parent = frame
+    sound.SoundId = "rbxassetid://6580172940"
+    sound.Volume = 50
+    sound:Play()
+
+    local tweenService = game:GetService("TweenService")
+    local blurEffect = Instance.new("BlurEffect")
+    blurEffect.Parent = game.Lighting
+    blurEffect.Size = 60
+
+    local zoomTweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    local blurTweenInfo = TweenInfo.new(4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+
+    local fadeIn = tweenService:Create(imageLabel, zoomTweenInfo, {ImageTransparency = 0.5})
+    local fadeOut = tweenService:Create(imageLabel, zoomTweenInfo, {ImageTransparency = 1})
+    local blurTween = tweenService:Create(blurEffect, blurTweenInfo, {Size = 0})
+    local zoomTween = tweenService:Create(imageLabel, zoomTweenInfo, {Size = UDim2.new(0.35, 0, 0.35, 0)})
+
+    fadeIn:Play()
+    fadeIn.Completed:Wait()
+
+    zoomTween:Play()
+    blurTween:Play()
+
+    wait(3)
+
+    fadeOut:Play()
+    fadeOut.Completed:Wait()
+
+    blurTween:Play()
+    blurTween.Completed:Wait()
+
+    blurEffect:Destroy()
+    screenGui:Destroy()
+end
+
+PlayThatBitch()
+
+
+
+Eternal = {
+    Silent = {
+        ["Enabled"] = false,
+
+        ["Prediction"] = 0.138,
+        ["Part"] = "HumanoidRootPart",
+        ["UseAirPart"] = false,
+        ["AirPart"] = "Head",
+        ["UseClosestPart"] = false,
+        
+        ["Hitchance"] = 100,
+
+        ["AntiGroundShots"] = false,
+        ["AntiGroundValue"] = 5,
+        ["AntiGroundActivation"] = -15,
+
+        ["Resolver"] = false,
+        ["ResolverTune"] = 0.13,
+
+        ["KoCheck"] = false,
+        ["GrabbedCheck"] = false,
+
+        ["SilentSwitch"] = false,
+        ["Keybind"] = "p",
+
+        FieldOfView = {
+            ["Visible"] = false,
+            ["Filled"] = false,
+            ["Color"] = Color3.fromRGB(0,166,255),
+            ["Transparency"] = 1,
+            ["Radius"] = 30,
+        },
+    },
+    Cam = {
+        ["Enabled"] = true,
+        ["Prediction"] = 0.13,
+        ["Part"] = "Head",
+        ["Keybind"] = "c",
+
+        ["UseShake"] = false,
+        ["ShakeMultiplyer"] = 1,
+        ["ShakeValue"] = 40,
+
+        ["UseSmoothing"] = false,
+        ["SmoothingAmount"] = 0.02,
+        ["EasingStyle"] = Enum.EasingStyle.Linear,
+        ["EasingDirection"] = Enum.EasingDirection.In,
+
+        ["Resolver"] = false,
+        ["ResolverTune"] = 0.13,
+
+        ["UseCircleRadius"] = false,
+        ["UnlockOnTargetDeath"] = false,
+        ["UnlockOnOwnDeath"] = false,
+
+        FieldOfView = {
+            ["Visible"] = false,
+            ["Filled"] = false,
+            ["Color"] = Color3.fromRGB(0,166,255),
+            ["Transparency"] = 1,
+            ["Radius"] = 30,
+        },
+    },
+    Both = {
+        ["Notifications"] = false,
+        ["Duration"] = 3,
+
+        ["VisibleCheck"] = false,
+        ["FriendCheck"] = false,
+        ["CrewCheck"] = false,
+        ["TeamCheck"] = false,
+    },
+    
+}
+
+
+local Mouse = game:GetService("Players").LocalPlayer:GetMouse()
+local Camera = game:GetService("Workspace").CurrentCamera
+
+local hojixvChosenPlayer
+local angle = 0 
+local hojixvz
+local MrChosenOne
+local CamLocking
+local Tracer = Drawing.new("Line")
+local zenxv = Drawing.new("Circle")
+
+local cframespeedtoggle = false
+local speedvalue = 2
+
+zenxv.Color = Eternal.Silent.FieldOfView.Color
+zenxv.Thickness = 1
+zenxv.NumSides = 9e9
+zenxv.Radius = Eternal.Silent.FieldOfView.Radius*3
+zenxv.Transparency = Eternal.Silent.FieldOfView.Transparency
+zenxv.Visible = Eternal.Silent.FieldOfView.Visible
+zenxv.Filled = Eternal.Silent.FieldOfView.Filled
+
+local CamCircleFOV = Drawing.new("Circle")
+CamCircleFOV.Color = Eternal.Cam.FieldOfView.Color
+CamCircleFOV.Thickness = 1
+CamCircleFOV.NumSides = 9e9
+CamCircleFOV.Radius = Eternal.Cam.FieldOfView.Radius*3
+CamCircleFOV.Transparency = Eternal.Cam.FieldOfView.Transparency
+CamCircleFOV.Visible = Eternal.Cam.FieldOfView.Visible
+CamCircleFOV.Filled = Eternal.Cam.FieldOfView.Filled
+
+game:GetService("RunService").heartbeat:Connect(function()
+    zenxv.Position = Vector2.new(Mouse.X,Mouse.Y+58)
+    CamCircleFOV.Position = Vector2.new(Mouse.X,Mouse.Y+58)
+    task.wait()
+end)
+
+
+
+local libary = loadstring(game:HttpGet("https://github.com/lukapvp711/puppyware/blob/main/README.md"))()
+local NotifyLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/imagoodpersond/puppyware/main/notify"))()
+local Notify = NotifyLibrary.Notify
+makefolder("Example")
+
+local Window = libary:new({name = "Eternal | Da Hood", accent = Color3.fromRGB(0, 166, 255), textsize = 15})
+local Legit = Window:page({name = "Main"})
+local Misc = Window:page({name = "Misc"})
+local Visuals = Window:page({name = "Visuals"})
+local Movement = Window:page({name = "Movement"})
+
+
+
+local RapidSection = Misc:section({name = "Rapid Fire", side = "left",size = 88})
+local EspSection = Visuals:section({name = "Esp", side = "left",size = 150})
+local Silent = Legit:section({name = "Silent", side = "Right",size = 165})
+local HbSection = Legit:section({name = "Hitbox Expander", side = "right",size = 185})
+local Camlock = Legit:section({name = "Cam", side = "Left",size = 525})
+local WalkSpeed = Movement:section({name = "WalkSpeed",side = "Left",size = 150})
+local Cframe = Movement:section({name = "Cframe",side = "Right",size = 150})
+local Kill = Legit:section({name = "Kill Aura",side ="right",size = 70})
+local tb = Legit:section({name = "Trigger Bot",side ="left",size = 80})
+
+
+
+
+
+
+
+
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local RunService = game:GetService("RunService")
+
+local tog = false
+local delayTime = 0.01 -- Default delay (in seconds)
+local toggleKey = Enum.KeyCode.T -- Default keybind
+
+tb:toggle({
+    name = "Enable",
+    def = false,
+    callback = function(value)
+        tog = value
+        print("Triggerbot:", tog)
+    end
+})
+
+tb:slider({
+    name = "Delay (in ms)",
+    def = 1,
+    max = 1000,
+    min = 1,
+    rounding = true,
+    ticking = false,
+    measuring = "ms",
+    callback = function(value)
+        delayTime = value / 1000 -- Convert to seconds
+        print("Delay set to:", delayTime, "seconds")
+    end
+})
+
+tb:keybind({
+    name = "Key bind",
+    def = nil,
+    callback = function(key)
+        toggleKey = key
+        print("Keybind set to:", key.Name)
+    end
+})
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == toggleKey then
+        tog = not tog
+        print("Triggerbot toggled:", tog)
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if tog and Mouse.Target and Mouse.Target.Parent then
+        local targetPlayer = Players:GetPlayerFromCharacter(Mouse.Target.Parent)
+        if targetPlayer and targetPlayer ~= LocalPlayer then
+            task.wait(delayTime)
+            mouse1press()
+            task.wait(0.05)
+            mouse1release()
+        end
+    end
+end)
+
+
+
+
+
+
+
+
+-- Variables
+local SilentAim = false
+local LocalPlayer = game:GetService("Players").LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local Camera = game:GetService("Workspace").CurrentCamera
+
+-- Define FOV Circle
+local FOV_CIRCLE = Drawing.new("Circle")
+FOV_CIRCLE.Visible = true
+FOV_CIRCLE.Filled = false
+FOV_CIRCLE.Thickness = 1
+FOV_CIRCLE.Transparency = 1
+FOV_CIRCLE.Color = Color3.new(1, 0, 0)  -- Red by default
+FOV_CIRCLE.Radius = getgenv().FOV
+
+-- Silent Aim Toggle
+Silent:toggle({
+    name = "Enable Silent Aim",
+    def = false,
+    callback = function(value)
+        SilentAim = value
+        if SilentAim then
+            FOV_CIRCLE.Color = Color3.new(0, 166, 255)  -- Green when enabled
+        else
+            FOV_CIRCLE.Color = Color3.new(1, 0, 0)  -- Red when disabled
+        end
+    end
+})
+
+-- Slider for FOV Radius
+Silent:slider({
+    name = "FOV Radius",
+    min = 0,
+    max = 1000,
+    def = getgenv().FOV,
+    callback = function(value)
+        getgenv().FOV = value
+        FOV_CIRCLE.Radius = value
+    end
+})
+
+-- Slider for X-Axis Prediction
+Silent:slider({
+    name = "Prediction X-Axis",
+    min = 0,
+    max = 20,
+    step = 0.01,
+    def = getgenv().PredictionX,
+    callback = function(value)
+        getgenv().PredictionX = value
+    end
+})
+
+-- Slider for Y-Axis Prediction
+Silent:slider({
+    name = "Prediction Y-Axis",
+    min = 0,
+    max = 20,
+    step = 0.01,
+    def = getgenv().PredictionY,
+    callback = function(value)
+        getgenv().PredictionY = value
+    end
+})
+
+-- Slider for Transparency
+Silent:slider({
+    name = "FOV Transparency",
+    min = 0,
+    max = 1,
+    step = 0.01,
+    def = FOV_CIRCLE.Transparency,
+    callback = function(value)
+        FOV_CIRCLE.Transparency = value
+    end
+})
+
+-- Add whitelist of players
+getgenv().DontShootThesePeople = {
+    "AimLockPsycho",
+    "JakeTheMiddleMan"
+}
+
+getgenv().AimKey = "p"
+
+-- Disable the output of certain logs
+local connections = getconnections(game:GetService("LogService").MessageOut)
+for _, v in ipairs(connections) do
+    v:Disable()
+end
+
+-- Silent Aim Logic
+local oldIndex = nil
+oldIndex = hookmetamethod(game, "__index", function(self, Index, Screw)
+    local Screw = oldIndex(self, Index)
+    local kalk = Mouse
+    local cc = "hit"
+    if self == kalk and (Index:lower() == cc) then
+        local Distance = 9e9
+        local Target = nil
+        for _, v in pairs(game:GetService("Players"):GetPlayers()) do
+            if not table.find(getgenv().DontShootThesePeople, v.Name) then
+                if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Humanoid") then
+                    local Enemy = v.Character
+                    local CastingFrom = CFrame.new(Camera.CFrame.Position, Enemy["Head"].CFrame.Position) * CFrame.new(0, 0, -4)
+                    local RayCast = Ray.new(CastingFrom.Position, CastingFrom.LookVector * 9000)
+                    local World, ToSpace = game:GetService("Workspace"):FindPartOnRayWithIgnoreList(RayCast, {LocalPlayer.Character:FindFirstChild("Head")})
+                    local RootWorld = (Enemy["Head"].CFrame.Position - ToSpace).magnitude
+                    if RootWorld < 4 then
+                        local RootPartPosition, Visible = Camera:WorldToScreenPoint(Enemy["Head"].Position)
+                        if Visible then
+                            local Real_Magnitude = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(RootPartPosition.X, RootPartPosition.Y)).Magnitude
+                            if Real_Magnitude < Distance and Real_Magnitude < FOV_CIRCLE.Radius then
+                                Distance = Real_Magnitude
+                                Target = Enemy
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        if Target ~= nil then
+            local Madox = Target["Head"]
+            local Formulate = Madox.CFrame + Vector3.new(getgenv().PredictionX, getgenv().PredictionY, 0)
+            return (Index:lower() == cc and Formulate)
+        end
+        return Screw
+    end
+    return oldIndex(self, Index, Screw)
+end)
+
+-- Adjust these values manually to move the FOV circle
+local X_Offset = 0
+local Y_Offset = 60
+
+-- Update FOV circle position every frame
+game:GetService("RunService").Heartbeat:Connect(function()
+    FOV_CIRCLE.Position = Vector2.new(Mouse.X + X_Offset, Mouse.Y + Y_Offset)
+end)
+
+-- Key Binding to Toggle Silent Aim
+Mouse.KeyDown:Connect(function(KeyPressed)
+    if KeyPressed == (getgenv().AimKey:lower()) then
+        if SilentAim == false then
+            FOV_CIRCLE.Color = Color3.new(0, 166, 255)
+            SilentAim = true
+        elseif SilentAim == true then
+            FOV_CIRCLE.Color = Color3.new(1, 0, 0)
+            SilentAim = false
+        end
+    end
+end)
+
+-- Teleport script
+Mouse.KeyDown:Connect(function(Rejoin)
+    if Rejoin == "=" then
+        local LocalPlayer = game:GetService("Players").LocalPlayer
+        game:GetService("TeleportService"):Teleport(game.PlaceId, LocalPlayer)
+    end
+end)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local tog = false
+local speed = 50
+local moveKey = Enum.KeyCode.V -- Default keybind
+
+WalkSpeed:toggle({
+    name = "Enable Walkspeed",
+    def = false,
+    callback = function(value)
+        tog = value
+        print("CFrame Movement: ", tog)
+    end
+})
+
+WalkSpeed:keybind({
+    name = "Walk Speed keybind",
+    def = Enum.KeyCode.V,
+    callback = function(key)
+        moveKey = key
+        print("CFrame Keybind Set To:", key.Name)
+    end
+})
+
+WalkSpeed:slider({
+    name = "Speed",
+    def = 16, -- Default value corresponds to the desired walk speed
+    max = 300,
+    min = 16,
+    rounding = true,
+    ticking = false,
+    measuring = "Speed",
+    callback = function(value)
+        speed = value
+        print("CFrame Speed Set To:", speed)
+    end
+})
+
+local userInput = game:GetService("UserInputService")
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+-- Toggle WalkSpeed using the keybind
+userInput.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == moveKey then
+        tog = not tog
+        if tog then
+            humanoid.WalkSpeed = speed
+        else
+            humanoid.WalkSpeed = 16 -- Default walk speed
+        end
+        print("CFrame Movement Toggled:", tog)
+    end
+end)
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local ESPEnabled = false
+local ESPColor = Color3.fromRGB(0, 166, 255) -- Default Red
+
+-- Function to create ESP box
+local function createESP(player)
+    if player == LocalPlayer then return end -- Don't ESP yourself
+    
+    local character = player.Character
+    if not character then return end
+
+    local highlight = Instance.new("Highlight")
+    highlight.Adornee = character
+    highlight.FillColor = ESPColor -- Use the chosen color
+    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+    highlight.FillTransparency = 0.5
+    highlight.OutlineTransparency = 0
+    highlight.Parent = character
+
+    player.CharacterAdded:Connect(function(newChar)
+        highlight.Adornee = newChar
+    end)
+end
+
+-- Function to toggle ESP
+local function toggleESP(value)
+    ESPEnabled = value
+    print("ESP Toggled:", ESPEnabled)
+
+    if ESPEnabled then
+        for _, player in pairs(Players:GetPlayers()) do
+            createESP(player)
+        end
+
+        Players.PlayerAdded:Connect(createESP)
+    else
+        for _, player in pairs(Players:GetPlayers()) do
+            if player.Character then
+                local highlight = player.Character:FindFirstChildOfClass("Highlight")
+                if highlight then highlight:Destroy() end
+            end
+        end
+    end
+end
+
+-- Function to update ESP color
+local function updateESPColor(color)
+    ESPColor = color
+    print("ESP Color Changed:", ESPColor)
+
+    -- Update existing ESP highlights
+    for _, player in pairs(Players:GetPlayers()) do
+        if player.Character then
+            local highlight = player.Character:FindFirstChildOfClass("Highlight")
+            if highlight then
+                highlight.FillColor = ESPColor
+            end
+        end
+    end
+end
+
+-- UI Toggle
+EspSection:toggle({
+    name = "Enable Chams",
+    def = false,
+    callback = function(value)
+        toggleESP(value)
+    end
+})
+
+-- Color Picker
+local picker = EspSection:colorpicker({
+    name = "Chams Color",
+    cpname = nil,
+    def = Color3.fromRGB(0, 166, 255), -- Default Red
+    callback = function(value)
+        updateESPColor(value)
+    end
+})
+
+
+
+
+
+-- Services
+local Services = {
+    Players = game:GetService("Players"),
+    Workspace = game:GetService("Workspace"),
+    Camera = game:GetService("Workspace").CurrentCamera
+}
+
+-- Settings
+local Settings = {
+    scriptEnabled = false,
+    expanderActive = false, 
+    size = 30,
+    transparency = 0.5,
+    expandedPlayer = nil, 
+    originalProperties = {},
+    expanderKey = nil,  -- Stores the keybind for the expander
+    hitboxColor = Color3.fromRGB(0, 166, 255),  -- Default hitbox color
+    outlineColor = Color3.fromRGB(0, 166, 166)  -- Default outline color
+}
+
+-- Function to get the closest player to the mouse cursor
+local function getClosestPlayerToMouse()
+    local closestPlayer = nil
+    local closestDistance = math.huge
+    local mousePos = Vector2.new(Services.Players.LocalPlayer:GetMouse().X, Services.Players.LocalPlayer:GetMouse().Y)
+
+    for _, Player in pairs(Services.Players:GetPlayers()) do
+        if Player ~= Services.Players.LocalPlayer and Player.Character then
+            local HRP = Player.Character:FindFirstChild("HumanoidRootPart")
+            if HRP then
+                local screenPos, onScreen = Services.Camera:WorldToScreenPoint(HRP.Position)
+                if onScreen then
+                    local distance = (mousePos - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
+                    if distance < closestDistance then
+                        closestDistance = distance
+                        closestPlayer = Player
+                    end
+                end
+            end
+        end
+    end
+
+    return closestPlayer
+end
+
+-- Function to apply selection box around the hitbox part
+local function applySelectionBox(hitboxPart)
+    local selectionBox = Instance.new("SelectionBox")
+    selectionBox.Adornee = hitboxPart
+    selectionBox.LineThickness = 0.05
+    selectionBox.Color3 = Settings.hitboxColor  -- Use dynamic color from picker
+    selectionBox.Transparency = Settings.transparency
+    selectionBox.Parent = hitboxPart
+end
+
+-- Function to apply corner outlines around the hitbox
+local function applyCornerOutlines(hitboxPart)
+    for _, corner in pairs({
+        Vector3.new(1, 1, 1), Vector3.new(-1, 1, 1),
+        Vector3.new(1, -1, 1), Vector3.new(-1, -1, 1),
+        Vector3.new(1, 1, -1), Vector3.new(-1, 1, -1),
+        Vector3.new(1, -1, -1), Vector3.new(-1, -1, -1),
+    }) do
+        local cornerAdornment = Instance.new("BoxHandleAdornment")
+        cornerAdornment.Adornee = hitboxPart
+        cornerAdornment.Size = Vector3.new(0.2, 0.2, 0.2)
+        cornerAdornment.Color3 = Settings.outlineColor  -- Use dynamic outline color from picker
+        cornerAdornment.Transparency = Settings.transparency
+        cornerAdornment.AlwaysOnTop = true
+        cornerAdornment.CFrame = CFrame.new(corner * (hitboxPart.Size / 2))
+        cornerAdornment.Parent = hitboxPart
+    end
+end
+
+-- Function to reset the hitbox
+local function resetHitbox(player)
+    if player and player.Character then
+        local HRP = player.Character:FindFirstChild("HumanoidRootPart")
+        if HRP and Settings.originalProperties[player] then
+            HRP.Size = Settings.originalProperties[player].Size
+            HRP.Transparency = Settings.originalProperties[player].Transparency
+            HRP.CanCollide = Settings.originalProperties[player].CanCollide 
+
+            for _, adornment in pairs(HRP:GetChildren()) do
+                if adornment:IsA("SelectionBox") or adornment:IsA("BoxHandleAdornment") then
+                    adornment:Destroy()
+                end
+            end
+
+            Settings.originalProperties[player] = nil
+        end
+    end
+end
+
+-- Function to toggle the hitbox expander
+local function toggleHitbox()
+    if not Settings.scriptEnabled then return end 
+
+    if Settings.expanderActive then
+        local closestPlayer = getClosestPlayerToMouse()
+        if closestPlayer and closestPlayer.Character then
+            local HRP = closestPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if HRP then
+                if Settings.expandedPlayer and Settings.expandedPlayer ~= closestPlayer then
+                    resetHitbox(Settings.expandedPlayer)
+                end
+
+                if not Settings.originalProperties[closestPlayer] then
+                    Settings.originalProperties[closestPlayer] = {
+                        Size = HRP.Size,
+                        Transparency = HRP.Transparency,
+                        CanCollide = HRP.CanCollide
+                    }
+                end
+
+                Settings.expandedPlayer = closestPlayer
+                HRP.Size = Vector3.new(Settings.size, Settings.size, Settings.size)
+                HRP.Transparency = Settings.transparency
+                HRP.CanCollide = false 
+
+                if not HRP:FindFirstChild("SelectionBox") then
+                    applySelectionBox(HRP)
+                end
+
+                applyCornerOutlines(HRP)
+            end
+        end
+    else
+        if Settings.expandedPlayer then
+            resetHitbox(Settings.expandedPlayer)
+            Settings.expandedPlayer = nil
+        end
+    end
+end
+
+-- Keybind Picker to set the keybind dynamically
+HbSection:keybind({
+    name = "Keybind",
+    def = nil,  -- Default is nil, meaning no keybind set initially
+    callback = function(key)
+        if key then  -- Only update if a key is selected
+            Settings.expanderKey = key
+        end
+    end
+})
+
+-- Updated Keybind Listener to check for the selected key
+game:GetService("UserInputService").InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Keyboard then
+        if Settings.expanderKey and input.KeyCode == Settings.expanderKey then  -- Check if key matches
+            if Settings.scriptEnabled then
+                Settings.expanderActive = not Settings.expanderActive
+                toggleHitbox()
+            end
+        end
+    end
+end)
+
+-- Color Picker for Hitbox Color
+HbSection:colorpicker({
+    name = "Hitbox Color",
+    cpname = nil,
+    def = Settings.hitboxColor,
+    callback = function(value)
+        Settings.hitboxColor = value  -- Set the selected hitbox color
+    end
+})
+
+-- Color Picker for Hitbox Outline Color
+HbSection:colorpicker({
+    name = "Outline Color",
+    cpname = nil,
+    def = Settings.outlineColor,
+    callback = function(value)
+        Settings.outlineColor = value  -- Set the selected outline color
+    end
+})
+
+-- Toggle for Script Activation
+HbSection:toggle({
+    name = "Enable Expander",
+    def = Settings.scriptEnabled,
+    callback = function(value)
+        Settings.scriptEnabled = value
+        if not Settings.scriptEnabled then
+            Settings.expanderActive = false
+            toggleHitbox()
+        end
+    end
+})
+
+-- Toggle for Expander Activation
+HbSection:toggle({
+    name = "Expander Active",
+    def = Settings.expanderActive,
+    callback = function(value)
+        if Settings.scriptEnabled then
+            Settings.expanderActive = value
+            toggleHitbox()
+        end
+    end
+})
+
+
+HbSection:slider({name = "Hitbox Transparency",def = 0.5, max = 1, min = 0, rounding = false,ticking = false, callback = function(value)
+    
+    Settings.transparency = value
+    if Settings.expandedPlayer then
+        local HRP = Settings.expandedPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if HRP then
+            HRP.Transparency = value
+            updateHitboxTransparency(HRP, value)
+        end
+    end
+
+
+ end})
+
+
+
+
+HbSection:slider({name = "Hitbox Size",def = 30, max = 100,min = 1,rounding = false,ticking = false, callback = function(value)
+    
+    Settings.size = value
+    if Settings.expandedPlayer then
+        local HRP = Settings.expandedPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if HRP then
+            HRP.Size = Vector3.new(value, value, value)
+        end
+    end
+
+    
+ end})
+
+
+RapidSection:toggle({name = "Enable ", def = false, callback = function(Boolean)
+    if Boolean then
+      
+      
+    local utility = {}
+getgenv().config = { enable = true, delay = 0.01 }
+utility.get_gun = function()
+    for _, tool in next, game.Players.LocalPlayer.Character:GetChildren() do
+        if tool:IsA("Tool") and tool:FindFirstChild("Ammo") then return tool end
+    end
+end
+
+utility.rapid = function(tool)
+    tool:Activate()
+end
+
+getgenv().is_firing = false
+
+game:GetService("UserInputService").InputBegan:Connect(function(i)
+    if i.UserInputType == Enum.UserInputType.MouseButton1 then
+        local gun = utility.get_gun()
+        if config.enable and gun and not is_firing then
+            is_firing = true
+            while is_firing do
+                utility.rapid(gun)
+                task.wait(config.delay)
+            end
+        end
+    end
+end)
+game:GetService("UserInputService").InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        is_firing = false
+    end
+end)    
+  
+    end
+end})
+
+
+
+
+Camlock:toggle({name = "Enabled", def = false, callback = function(Boolean)
+    Eternal.Cam.Enabled = Boolean
+end})
+
+
+
+Camlock:toggle({name = "Smoothing", def = false, callback = function(Boolean)
+    Eternal.Cam.UseSmoothing = Boolean
+end})
+
+Camlock:toggle({name = "Add Shake", def = false, callback = function(Boolean)
+    Eternal.Cam.UseShake = Boolean
+end})
+
+Camlock:toggle({name = "Show FOV", def = false, callback = function(Boolean)
+    CamCircleFOV.Visible = Boolean
+end})
+
+Camlock:toggle({name = "Use Circle Radius", def = false, callback = function(Boolean)
+    Eternal.Cam.UseCircleRadius = Boolean
+end})
+
+Camlock:toggle({name = "Resolver", def = false, callback = function(Boolean)
+    Eternal.Cam.Resolver = Boolean
+end})
+
+Camlock:toggle({name = "Unlock On Target Death", def = false, callback = function(Boolean)
+    Eternal.Cam.UnlockOnTargetDeath = Boolean
+end})
+
+Camlock:toggle({name = "Unlock On My Death", def = false, callback = function(Boolean)
+    Eternal.Cam.UnlockOnOwnDeath = Boolean
+end})
+
+Camlock:toggle({name = "Visible Check", def = false, callback = function(Boolean)
+    Eternal.Both.VisibleCheck = Boolean
+end})
+
+Camlock:toggle({name = "Friend Check", def = false, callback = function(Boolean)
+    Eternal.Both.FriendCheck = Boolean
+end})
+
+Camlock:toggle({name = "Crew Check", def = false, callback = function(Boolean)
+    Eternal.Both.CrewCheck = Boolean
+end})
+
+Camlock:toggle({name = "Team Check", def = false, callback = function(Boolean)
+    Eternal.Both.TeamCheck = Boolean
+end})
+
+
+Camlock:slider({name = "Prediction", def = 0.3, max = 0.4, min = 0.01, rounding = false, callback = function(Value)
+    Eternal.Cam.Prediction = Value
+end})
+
+Camlock:slider({name = "Smoothing Amount", def = 0.02, max = 1, min = 0.001, rounding = false, callback = function(Value)
+    Eternal.Cam.SmoothingAmount = Value
+end})
+
+Camlock:slider({name = "Shake Value", def = 40, max = 100, min = 1, rounding = false, callback = function(Value)
+    Eternal.Cam.ShakeValue = Value
+end})
+
+Camlock:slider({name = "Shake Multiplyer", def = 1, max = 10, min = 1, rounding = false, callback = function(Value)
+    Eternal.Cam.ShakeMultiplyer = Value
+end})
+
+Camlock:slider({name = "Resolver Tune", def = 0.13, max = 0.2, min = 0.1, rounding = false, callback = function(Value)
+    Eternal.Cam.ResolverTune = Value
+end})
+
+Camlock:slider({name = "Radius", def = 20, max = 250, min = 1, rounding = false, callback = function(Value)
+    CamCircleFOV.Radius = Value*3
+end})
+
+Camlock:dropdown({name = "Part", def = "Head", max = 7, options = {"Head", "HumanoidRootPart", "UpperTorso", "LowerTorso","LeftHand", "RightHand", "LeftFoot", "RightFoot"}, callback = function(part)
+    Eternal.Cam.Part = part
+end})
+
+Camlock:dropdown({name = "Key", def = "c", max = 7, options = {"c", "q", "x", "z","t", "v", "g", "y"}, callback = function(part)
+    Eternal.Cam.Keybind = part
+end})
+
+
+local Settings = Window:page({name = "Settings"})
+local ConfigSection = Settings:section({name = "Config",side = "right", size = 250})
+local ConfigLoader = ConfigSection:configloader({folder = "Cfg"})
+
+
+function Notify(Text)
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "Eternal",
+        Text = Text,
+        Duration = Eternal.Both.Duration,
+    })
+end
+
+local ChanceOfHitting = function(Number)
+    Number = math.floor(Number)
+    local Chance = math.floor(Random.new().NextNumber(Random.new(), 0, 1) * 100) / 100
+    return Chance <= Number / 100
+end
+
+local function ClosestPartToCursor(Target)
+    local closestPart
+    local shortestDistance = 9e9
+
+    for _, v in next, Target:GetChildren() do
+        if v:IsA("Part") or v:IsA("MeshPart") then
+                local WorldToViewP = game:GetService("Workspace").CurrentCamera:WorldToScreenPoint(v.Position)
+                local Distance = (Vector2.new(WorldToViewP.X, WorldToViewP.Y) -
+                                    Vector2.new(Mouse.X, Mouse.Y)).Magnitude
+            if Distance < shortestDistance then
+                shortestDistance = Distance
+                closestPart = v
+            end
+        end
+    end
+    return closestPart
+end
+
+local function hojiownsu()
+    local target = nil
+    local distance = 9e9
+    local players = game:GetService("Players"):GetPlayers()
+    local localPlayer = game:GetService("Players").LocalPlayer
+    local camera = game:GetService("Workspace").CurrentCamera
+    local Probability = ChanceOfHitting(Eternal.Silent.Hitchance)
+
+    if (not Probability) then
+            return nil
+        end
+    
+    for _, player in pairs(players) do
+        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") then
+            local castingFrom = CFrame.new(camera.CFrame.Position, player.Character[Eternal.Silent.Part].CFrame.Position) * CFrame.new(0, 0, -4)
+            local ray = Ray.new(castingFrom.Position, castingFrom.LookVector * 9000)
+            local hitPart, hitPosition = game:GetService("Workspace"):FindPartOnRayWithIgnoreList(ray, {localPlayer.Character:FindFirstChild("Head")})
+            local rootDistance = (player.Character[Eternal.Silent.Part].Position - hitPosition).magnitude
+            
+            if rootDistance < 4 then
+                local rootPosition, visible = camera:WorldToViewportPoint(player.Character[Eternal.Silent.Part].Position)
+                if visible then
+                    local realDistance = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(rootPosition.X, rootPosition.Y)).Magnitude
+                    if realDistance < distance and realDistance < zenxv.Radius then
+                        distance = realDistance
+                        target = player.Character
+                    end
+                end
+
+                if Eternal.Silent.KoCheck and player then
+                    local KoCheck = player.Character.BodyEffects["K.O"].Value
+                    if KoCheck then
+                        distance = nil
+                        target = nil
+                    end
+                end
+                if Eternal.Silent.GrabbedCheck and player then
+                    local Grabbed = player.Character:FindFirstChild("GRABBING_CONSTRAINT") ~= nil
+                    if Grabbed then
+                        distance = nil
+                        target = nil
+                    end
+                end
+                if Eternal.Both.VisibleCheck and player then
+                    if player.Character.Head.Transparency > 0.5 then
+                        distance = nil
+                        target = nil
+                    end
+                end
+                if Eternal.Both.CrewCheck and player then
+                    if player.DataFolder.Information:FindFirstChild("Crew").Value == game.Players.LocalPlayer.DataFolder.Information:FindFirstChild("Crew").Value then
+                        distance = nil
+                        target = nil
+                    end
+                end
+                if Eternal.Both.FriendCheck and player then
+                    if game.Players.LocalPlayer:IsFriendsWith(player.UserId) then
+                        distance = nil
+                        target = nil
+                    end
+                end
+                if Eternal.Both.TeamCheck and player then
+                    if player.Team == game.Players.LocalPlayer.Team then
+                        distance = nil
+                        target = nil
+                    end
+                end
+            end
+        end
+
+    end
+    return target
+end
+
+function ClosestPlayer()
+    local NearestPlayer = nil
+    local shortestDistance = 300
+    for _, otherPlayer in pairs(game.Players:GetPlayers()) do
+        if otherPlayer ~= game.Players.LocalPlayer and otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local otherPlayerPosition = otherPlayer.Character.HumanoidRootPart.Position
+            local pos = game:GetService("Workspace").CurrentCamera:WorldToViewportPoint(otherPlayerPosition)
+            local distance = (Vector2.new(pos.X, pos.Y) - Vector2.new(game.Players.LocalPlayer:GetMouse().X, game.Players.LocalPlayer:GetMouse().Y)).Magnitude
+            if distance < shortestDistance  then
+                if Eternal.Cam.UseCircleRadius and distance < CamCircleFOV.Radius then
+                    NearestPlayer = otherPlayer
+                    shortestDistance = distance
+                else
+                    NearestPlayer = otherPlayer
+                    shortestDistance = distance
+                end
+            end
+        end
+    end
+    return NearestPlayer
+end
+
+CamKeybind = false
+TargetKeybind = false
+    Mouse.KeyDown:Connect(function(ChosenKey)
+        if ChosenKey == Eternal.Cam.Keybind and Eternal.Cam.Enabled then
+                if CamKeybind == false then
+                    CamKeybind = true
+                    MrChosenOne = ClosestPlayer()
+                    if Eternal.Both.Notifications then
+                        Notify("Locked Onto "..MrChosenOne.DisplayName)
+                    end
+                elseif CamKeybind == true then
+                    CamKeybind = false
+                    if Eternal.Both.Notifications then
+                        Notify("No Longer Locked On")
+                    end
+                end
+    
+        end
+    end)
+
+
+
+
+task.spawn(function()
+    while true do
+        task.wait()
+        if CamKeybind then
+            if CamKeybind and MrChosenOne and MrChosenOne.Parent then
+            local Opp = MrChosenOne.Character[Eternal.Cam.Part].Position + MrChosenOne.Character[Eternal.Cam.Part].Velocity * Eternal.Cam.Prediction
+            local Mop = MrChosenOne.Character.Humanoid.MoveDirection
+            
+            if Eternal.Cam.Resolver and CamKeybind and MrChosenOne then
+                Mop = Mop * 16
+                Opp = MrChosenOne.Character[Eternal.Cam.Part].Position + Mop * Eternal.Cam.ResolverTune
+            end
+                if Eternal.Cam.UseSmoothing == true then
+                    Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.p, Opp) 
+                        , Eternal.Cam.SmoothingAmount , Eternal.Cam.EasingStyle, Eternal.Cam.EasingDirection)
+                    if Eternal.Cam.UseShake then
+                        Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.p, Opp + Vector3.new(math.random(-Eternal.Cam.ShakeValue,Eternal.Cam.ShakeValue),math.random(-Eternal.Cam.ShakeValue,Eternal.Cam.ShakeValue),math.random(-Eternal.Cam.ShakeValue,Eternal.Cam.ShakeValue)) * Eternal.Cam.ShakeMultiplyer ) 
+                        , Eternal.Cam.SmoothingAmount , Eternal.Cam.EasingStyle, Eternal.Cam.EasingDirection)
+                    end
+                else
+                    Camera.CFrame = CFrame.new(Camera.CFrame.p, Opp)
+
+                    if Eternal.Cam.UseShake then
+                        Camera.CFrame = CFrame.new(Camera.CFrame.p, Opp + Vector3.new(math.random(-Eternal.Cam.ShakeValue,Eternal.Cam.ShakeValue),math.random(-Eternal.Cam.ShakeValue,Eternal.Cam.ShakeValue),math.random(-Eternal.Cam.ShakeValue,Eternal.Cam.ShakeValue)) * Eternal.Cam.ShakeMultiplyer )
+                    end
+                end
+
+                if Eternal.Cam.UnlockOnTargetDeath then
+                    if MrChosenOne.Character.BodyEffects["K.O"].Value then
+                        CamKeybind = false
+                        if Eternal.Both.Notifications then
+                            Notify("No Longer Attached")
+                        end
+                    end
+                end 
+                if Eternal.Cam.UnlockOnOwnDeath then
+                    if game.Players.LocalPlayer.Character.BodyEffects["K.O"].Value then
+                        CamKeybind = false
+                        if Eternal.Both.Notifications then
+                            Notify("No Longer Attached")
+                        end
+                    end
+                end 
+                if Eternal.Both.VisibleCheck then
+                    if MrChosenOne.Character.Head.Transparency > 0.5 then
+                        CamKeybind = false
+                        if Eternal.Both.Notifications then
+                            Notify("No Longer Attached")
+                        end
+                    end
+                end
+                if Eternal.Both.CrewCheck then
+                    if MrChosenOne.DataFolder.Information:FindFirstChild("Crew").Value == game.Players.LocalPlayer.DataFolder.Information:FindFirstChild("Crew").Value then
+                        CamKeybind = false
+                        if Eternal.Both.Notifications then
+                            Notify("No Longer Attached")
+                        end
+                    end
+                end
+                if Eternal.Both.FriendCheck then
+                    if game.Players.LocalPlayer:IsFriendsWith(MrChosenOne.UserId) then
+                        CamKeybind = false
+                        if Eternal.Both.Notifications then
+                            Notify("No Longer Attached")
+                        end
+                    end
+                end
+                if Eternal.Both.TeamCheck then
+                    if MrChosenOne.Team == game.Players.LocalPlayer.Team then
+                        CamKeybind = false
+                        if Eternal.Both.Notifications then
+                            Notify("No Longer Attached")
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
+
+    local function pointOnCircle(angle)
+        local x = Eternal.Target.StrafeRadius * math.cos(angle)
+        local z = Eternal.Target.StrafeRadius * math.sin(angle)
+        return Vector3.new(x, 0, z)
+    end
+
+
+    function FindClosestPlayer()
+        local localPlayer = game.Players.LocalPlayer
+        local shortestDistance = math.huge
+        local nearestPlayer = nil
+        local localMouse = Vector2.new(localPlayer:GetMouse().X, localPlayer:GetMouse().Y)
+        
+        for _, otherPlayer in pairs(game.Players:GetPlayers()) do
+            if otherPlayer ~= localPlayer and otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                local otherPlayerPosition = otherPlayer.Character.HumanoidRootPart.Position
+                local pos = game:GetService("Workspace").CurrentCamera:WorldToViewportPoint(otherPlayerPosition)
+                local distance = (Vector2.new(pos.X, pos.Y) - localMouse).Magnitude
+                if distance < shortestDistance then
+                    shortestDistance = distance
+                    nearestPlayer = otherPlayer
+                end
+            end
+        end
+        return nearestPlayer
+    end
+
+    Mouse.KeyDown:Connect(function(ChosenKey)
+        if ChosenKey == Eternal.Target.Keybind and Eternal.Target.Enabled then
+            if TargetKeybind == false then
+                TargetKeybind = true
+                hojixvChosenPlayer = FindClosestPlayer()
+                if Eternal.Target.Notify then
+                    Notify("Locked Onto "..hojixvChosenPlayer.DisplayName)
+                end
+            elseif TargetKeybind == true then
+                TargetKeybind = false
+                if Eternal.Target.Notify then
+                    Notify("No Longer Locked On")
+                end
+            end
+        end
+    end)
+
+    game:GetService("RunService").Heartbeat:Connect(function()
+        if TargetKeybind and Eternal.Target.TargetStrafe and hojixvChosenPlayer then
+            if hojixvChosenPlayer.Character.BodyEffects["K.O"].Value ~= true then
+                local circlePosition = hojixvChosenPlayer.Character.HumanoidRootPart.Position + pointOnCircle(angle) + Vector3.new(0, Eternal.Target.StrafeHeight, 0)
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(circlePosition)
+                angle = angle + math.rad(Eternal.Target.StrafeSpeed)
+            end
+        end
+    end)
+
+    for _, v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+            if v:IsA("Script") and v.Name ~= "Health" and v.Name ~= "Sound" and v:FindFirstChild("LocalScript") then
+                v:Destroy()
+            end
+        end
+        game.Players.LocalPlayer.CharacterAdded:Connect(function(char)
+            repeat
+                wait()
+            until game.Players.LocalPlayer.Character
+            char.ChildAdded:Connect(function(child)
+                if child:IsA("Script") then 
+                    wait(0.1)
+                    if child:FindFirstChild("LocalScript") then
+                        child.LocalScript:FireServer()
+                    end
+                end
+            end)
+        end)
+
+   
+   
+
+
+for _, con in next, getconnections(workspace.CurrentCamera.Changed) do
+    task.wait()
+      con:Disable()
+  end
+  for _, con in next, getconnections(workspace.CurrentCamera:GetPropertyChangedSignal("CFrame")) do
+     task.wait()
+      con:Disable()
+  end
+  
+  for _, key in next, getgc(true) do 
+    local function updateKey(instanceType)
+        if pcall(function() return rawget(key, instanceType) end) and typeof(rawget(key, instanceType)) == 'table' and (rawget(key, instanceType))[1] == 'kick' then
+            key.tvk = {
+                'kick',
+                function() 
+                    return game.Workspace:WaitForChild('')
+                end
+            }
+        end
+    end
+
+    updateKey('indexInstance')
+    updateKey('namecallInstance')
+end
